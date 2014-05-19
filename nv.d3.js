@@ -7,10 +7,10 @@
         factory(exports, require('d3'));
     } else {
         // Browser globals
-        factory((root.nv = {}), root.d3);
+        root.nv = factory({}, root.d3);
     }
-}(this, function (exports, d3) {
-var nv = window.nv || {};
+}(this, function (nv, d3) {
+var nv = nv || {};
 
 nv.version = '1.1.15b';
 nv.dev = true //set false when in production
@@ -11674,9 +11674,5 @@ nv.models.stackedAreaChart = function() {
     return chart;
 };
 
-
-exports = nv;
-
 return nv;
-
 }));
