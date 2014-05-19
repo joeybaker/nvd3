@@ -256,3 +256,18 @@ Chart.prototype.rightAlignYAxis = function(_) {
     this.yAxis.orient( (_) ? 'right' : 'left');
     return this;
 };
+
+Chart.prototype.reduceXTicks = function(_){
+    if (!arguments.length) return this.options.reduceXTicks;
+    this.options.reduceXTicks = _;
+    return this;
+};
+
+// DEPRECATED
+Chart.prototype.state = function(_) {
+    nv.deprecated('Chart.state');
+    if (!arguments.length) return this.options.state;
+    this.options.state = _;
+    return this;
+};
+// END DEPRECATED

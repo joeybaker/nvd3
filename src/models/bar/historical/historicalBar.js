@@ -10,6 +10,9 @@ var HistoricalBarPrivates = {
     , xRange: null
     , yRange: null
     , interactive : true
+    , id : null
+    , x: function(d){return d.x;}
+    , y: function(d){return d.y;}
 };
 
 /**
@@ -174,12 +177,6 @@ HistoricalBar.prototype.draw = function(data){
         .attr('height', function(d,i) { return nv.utils.NaNtoZero(Math.max(Math.abs(that.yScale()(that.y()(d,i)) - that.yScale()(0)),1)) });
 };
 
-HistoricalBar.prototype.color = function(_){
-    if (!arguments.length) return this.options.color;
-    this.options.color = nv.utils.getColor(_);
-    return this;
-};
-
 //Create methods to allow outside functions to highlight a specific bar.
 HistoricalBar.prototype.highlightPoint = function(pointIndex, isHoverOver) {
     d3.select(".nv-"+this.options.chartClass+"-" + this.id())
@@ -199,7 +196,27 @@ HistoricalBar.prototype.clearHighlights = function() {
 nv.models.historicalBar = function () {
     "use strict";
 
-    var historicalBar = new HistoricalBar();
+    var historicalBar = new HistoricalBar(),
+        api = [
+            'x',
+            'y',
+            'width',
+            'height',
+            'margin',
+            'xScale',
+            'yScale',
+            'xDomain',
+            'yDomain',
+            'xRange',
+            'yRange',
+            'forceX',
+            'forceY',
+            'padData',
+            'clipEdge',
+            'color',
+            'id',
+            'interactive'
+        ];
 
     function chart(selection) {
         historicalBar.render(selection);
@@ -210,10 +227,7 @@ nv.models.historicalBar = function () {
 
     chart.options = nv.utils.optionsFunc.bind(chart);
 
-    nv.utils.rebindp(chart, historicalBar, HistoricalBar.prototype,
-        'x', 'y', 'width', 'height', 'margin', 'xScale', 'yScale', 'xDomain', 'yDomain', 'xRange', 'yRange',
-        'forceX', 'forceY', 'padData', 'clipEdge', 'color', 'id', 'interactive'
-    );
+    nv.utils.rebindp(chart, historicalBar, HistoricalBar.prototype, api);
 
     return chart;
 };

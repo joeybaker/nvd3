@@ -1,6 +1,9 @@
 var HistoricalBarChartPrivates = {
     defaultState : null
     , transitionDuration : 250
+    , xScale: null
+    , yScale: null
+    , tooltips: true
 };
 
 /**
@@ -17,8 +20,6 @@ function HistoricalBarChart(options){
     Chart.call(this, options);
 
     this.historicalBar = nv.models.historicalBar();
-    this.xScale = this.historicalBar.xScale;
-    this.yScale = this.historicalBar.yScale;
     this.state = this.getStateManager();
 }
 
@@ -45,6 +46,9 @@ HistoricalBarChart.prototype.draw = function(data){
                     .filter(function(d,i) { return !data[i].disabled })
             )
         );
+
+    this.xScale(this.historicalBar.xScale());
+    this.yScale(this.historicalBar.yScale());
 
     var barsWrap = this.g.select('.nv-barsWrap')
         .datum(data.filter(function(d) { return !d.disabled }))
@@ -114,13 +118,6 @@ HistoricalBarChart.prototype.color = function(_) {
     return this;
 };
 
-HistoricalBarChart.prototype.rightAlignYAxis = function(_) {
-    if(!arguments.length) return this.options.rightAlignYAxis;
-    this.options.rightAlignYAxis = _;
-    this.yAxis.orient( (_) ? 'right' : 'left');
-    return this;
-};
-
 HistoricalBarChart.prototype.showTooltip = function(e, offsetElement) {
     // New addition to calculate position if SVG is scaled with viewBox, may move TODO: consider implementing everywhere else
     if (offsetElement) {
@@ -147,7 +144,24 @@ HistoricalBarChart.prototype.showTooltip = function(e, offsetElement) {
 nv.models.historicalBarChart = function() {
     "use strict";
 
-    var historicalBarChart = new HistoricalBarChart();
+    var historicalBarChart = new HistoricalBarChart(),
+        api = [
+            'margin',
+            'width',
+            'height',
+            'color',
+            'showLegend',
+            'showXAxis',
+            'showYAxis',
+            'rightAlignYAxis',
+            'tooltips',
+            'tooltipContent',
+            'state',
+            'defaultState',
+            'noData',
+            'transitionDuration',
+            'reduceXTicks'
+        ];
 
     function chart(selection) {
         historicalBarChart.render(selection);
@@ -156,18 +170,38 @@ nv.models.historicalBarChart = function() {
 
     chart.dispatch = historicalBarChart.dispatch;
     chart.historicalBar = historicalBarChart.historicalBar;
+    chart.legend = historicalBarChart.legend;
+    chart.xAxis = historicalBarChart.xAxis;
+    chart.yAxis = historicalBarChart.yAxis;
     chart.state = historicalBarChart.state;
 
-    d3.rebind(chart, historicalBarChart.historicalBar, 'defined', 'isArea', 'x', 'y', 'size', 'xScale', 'yScale',
-        'xDomain', 'yDomain', 'xRange', 'yRange', 'forceX', 'forceY', 'interactive', 'clipEdge', 'clipVoronoi',
-        'id', 'interpolate','highlightPoint', 'clearHighlights', 'interactive');
+    d3.rebind(chart, historicalBarChart.historicalBar,
+        'defined',
+        'isArea',
+        'x',
+        'y',
+        'size',
+        'xScale',
+        'yScale',
+        'xDomain',
+        'yDomain',
+        'xRange',
+        'yRange',
+        'forceX',
+        'forceY',
+        'interactive',
+        'clipEdge',
+        'clipVoronoi',
+        'id',
+        'interpolate',
+        'highlightPoint',
+        'clearHighlights',
+        'interactive'
+    );
 
     chart.options = nv.utils.optionsFunc.bind(chart);
 
-    nv.utils.rebindp(chart, historicalBarChart, HistoricalBarChart.prototype,
-        'margin', 'width', 'height', 'color', 'showLegend', 'showXAxis', 'showYAxis', 'rightAlignYAxis', 'tooltips',
-        'tooltipContent', 'state', 'defaultState', 'noData', 'transitionDuration', 'xAxis', 'yAxis'
-    );
+    nv.utils.rebindp(chart, historicalBarChart, HistoricalBarChart.prototype, api);
 
     return chart;
 };

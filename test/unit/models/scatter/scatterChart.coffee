@@ -25,6 +25,10 @@ apiTest.config.scatterChart =
         'tooltipX'
         'tooltipY'
     ]
+    overrides: [
+        'size'
+        'tooltips'
+    ]
     submodels:
         scatter: nv.models.scatter
         legend: nv.models.legend
